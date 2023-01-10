@@ -121,8 +121,9 @@ class SurveyCubit extends Cubit<SurveyState> {
     int surveyIndex = state.surveyIndex;
     int skipCount = 1;
     try {
-      if (questions[surveyIndex + 1].question.conditionalId != null)
+      if (questions[surveyIndex + 1].question.conditionalId != null) {
         skipCount++;
+      }
     } catch (_) {
       print("FINALLY IT'S OUT OF RANGE!!!!");
     }
@@ -140,34 +141,37 @@ class SurveyCubit extends Cubit<SurveyState> {
   /// [onNextQuestionNewTest]
   ///
   onNextQuestionNewTest() async {
-    Review review = Review.empty;
+    // Review review = Review.empty;
     List<QuestionElement> questions = List.from(state.business.questions);
-    int surveyLength = questions.length +
-        state.business.survey.customerInfo.getCustomerInfoCount;
+    // int surveyLength = questions.length +
+    //     state.business.survey.customerInfo.getCustomerInfoCount;
     int surveyIndex = state.surveyIndex;
     // check if question, customerInfo or both
     if (questions.isNotEmpty && surveyIndex < questions.length) {
       var question = questions[surveyIndex].question;
       // to save the review if it's not a custom question
-      bool saveReview = true;
       switch (question.questionType) {
-        case QuestionType.rating:
-        case QuestionType.satisfaction:
-          break;
         case QuestionType.customRating:
+          if (state.answersId.isNotEmpty) {
+            _createNewReview(
+              questionId: questions[surveyIndex].answers.first.id,
+            );
+          }
+          break;
         case QuestionType.customSatisfaction:
-          if(state.answersId.isEmpty) {
-            saveReview = false;
+          if (state.answersId.isNotEmpty) {
+            _createNewReview(
+              questionId: questions[surveyIndex].answers.first.id,
+            );
           }
           break;
         default:
+          _createNewReview(
+            questionId: question.questionId,
+          );
       }
-      if (saveReview) {
-        _createNewReview(
-          questionId: question.questionId,
-        );
-      }
-    } else if (state.business.survey.customerInfo.getCustomerInfoCount != 0 && surveyIndex < 0) {}
+    } else if (state.business.survey.customerInfo.getCustomerInfoCount != 0 &&
+        surveyIndex < 0) {}
   }
 
   ///
@@ -460,7 +464,6 @@ class SurveyCubit extends Cubit<SurveyState> {
         review: review,
         answersId: [],
         questionsId: questionsId,
-        // random: Random().nextDouble(),
       ),
     );
   }
@@ -522,23 +525,25 @@ class SurveyCubit extends Cubit<SurveyState> {
   /// "FOR NON NORMAL QUESTIONS"
   /// Move to the next question and add a new review to the survey
   ///
-  Future<void> onSubmitReview({
-    String? comment,
-    String? contactNumber,
-    String? name,
-  }) async {
+  Future<void> onSubmitReview(// String? comment,
+      // String? contactNumber,
+      // String? name,
+      ) async {
+    Review review = state.review.copyWith(
+      // comment: comment,
+      // contactNumber: contactNumber,
+      // name: name,
+      surveyId: state.review.surveyId,
+      deviceId: await getDeviceId(),
+      reviewedCustomerInfo: ReviewedCustomerInfo.fromMap(
+        state.customerJson,
+      ),
+    );
+
     emit(
       state.copyWith(
-        review: state.review.copyWith(
-          // comment: comment,
-          // contactNumber: contactNumber,
-          // name: name,
-          surveyId: state.review.surveyId,
-          deviceId: await getDeviceId(),
-          reviewedCustomerInfo: ReviewedCustomerInfo.fromMap(
-            state.customerJson,
-          ),
-        ),
+        review: review,
+        thankYouStatus: _checkForBadReview(review),
         status: BusinessStatus.save,
       ),
     );
@@ -576,5 +581,28 @@ class SurveyCubit extends Cubit<SurveyState> {
         dialog: state.dialog,
       ),
     );
+  }
+
+  ThankYouStatus _checkForBadReview(Review review) {
+    for (ReviewedQuestion reviewedQuestion in review.reviewedQuestions) {
+      if (reviewedQuestion.answers.any(
+        (element) =>
+            element == 3 || element == 4 || element == 8 || element == 9,
+      )) {
+        return ThankYouStatus.badRate;
+      }
+      if (reviewedQuestion.answers.any(
+        (element) =>
+            element == 5 ||
+            element == 6 ||
+            element == 7 ||
+            element == 10 ||
+            element == 11 ||
+            element == 12,
+      )) {
+        return ThankYouStatus.goodRate;
+      }
+    }
+    return ThankYouStatus.noRate;
   }
 }

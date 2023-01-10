@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:survey_point_05/src/modules/blocs/survey_cubit/survey_cubit.dart';
 
 import '../../../constants/enums.dart';
@@ -14,10 +13,12 @@ class BusinessThankLayout extends StatefulWidget {
 
   final bool isSurvey;
 
-  static Route<void> route(bool isSurvey) => MaterialPageRoute(
-        builder: (_) => BusinessThankLayout(
-          isSurvey: isSurvey,
-        ),
+  static Route<void> route(bool isSurvey) =>
+      MaterialPageRoute(
+        builder: (_) =>
+            BusinessThankLayout(
+              isSurvey: isSurvey,
+            ),
       );
 
   @override
@@ -27,12 +28,18 @@ class BusinessThankLayout extends StatefulWidget {
 class _BusinessThankLayoutState extends State<BusinessThankLayout> {
   final AudioPlayer audio = AudioPlayer();
   late Local local = Local.ar;
+  late String thankStatus = 'empty';
 
   @override
   void initState() {
     super.initState();
-    if(widget.isSurvey) {
-      local = BlocProvider.of<SurveyCubit>(context).state.local;
+    if (widget.isSurvey) {
+      local = context.read<SurveyCubit>().state.local;
+          // context.select((SurveyCubit cubit) => cubit.state.local);
+      thankStatus = context.read<SurveyCubit>().state.thankYouStatus.name;
+          // context.select((SurveyCubit cubit) =>
+          // cubit.state.thankYouStatus
+          //     .name,);
     }
     _audioPlay(true);
   }
@@ -64,10 +71,18 @@ class _BusinessThankLayoutState extends State<BusinessThankLayout> {
         Padding(
           padding: const EdgeInsets.only(top: 32.0),
           child: Text(
-            getDoneMsgLocal(local),
-            style: Theme.of(context).textTheme.headline5!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+            getDoneMsgLocal(local) + thankStatus,
+            style: Theme
+                .of(context)
+                .textTheme
+                .headline5!
+                .copyWith(
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .primary,
+              fontFamily: getFontFamily(local),
+            ),
             textAlign: TextAlign.center,
           ),
         ),
@@ -81,16 +96,18 @@ class _BusinessThankLayoutState extends State<BusinessThankLayout> {
             children: [
               Text(
                 getThankYouLocale(local),
-                style: GoogleFonts.openSans(
+                style: TextStyle(
                   fontSize: 80.0,
                   fontWeight: FontWeight.bold,
+                  fontFamily: getFontFamily(local),
                 ),
               ),
               Text(
                 getGoodbyeLocale(local),
-                style: GoogleFonts.openSans(
+                style: TextStyle(
                   fontSize: 80.0,
                   fontWeight: FontWeight.bold,
+                  fontFamily: getFontFamily(local),
                 ),
               ),
             ],

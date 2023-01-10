@@ -8,6 +8,7 @@ abstract class SurveyState extends Equatable {
     this.local = Local.en,
     this.status = BusinessStatus.setup,
     this.review = Review.empty,
+    this.thankYouStatus = ThankYouStatus.noRate,
     this.surveyIndex = 0,
     this.answersId = const [],
     this.questionsId = const [],
@@ -22,6 +23,8 @@ abstract class SurveyState extends Equatable {
   final Local local;
   final BusinessStatus status;
   final Review review;
+
+  final ThankYouStatus thankYouStatus;
   final int surveyIndex;
   final List<int> answersId;
   final List<int> questionsId;
@@ -38,7 +41,8 @@ abstract class SurveyState extends Equatable {
         local,
         status,
         review,
-    surveyIndex,
+        thankYouStatus,
+        surveyIndex,
         answersId,
         questionsId,
         timerVisibility,
@@ -54,6 +58,7 @@ abstract class SurveyState extends Equatable {
     Local? local,
     BusinessStatus? status,
     Review? review,
+    ThankYouStatus? thankYouStatus,
     int? surveyIndex,
     List<int>? answersId,
     List<int>? questionsId,
@@ -70,6 +75,7 @@ class SurveyInitial extends SurveyState {
     required super.business,
     required super.locals,
     required super.dialog,
+    super.thankYouStatus,
     super.local = Local.en,
     super.status = BusinessStatus.setup,
     super.review = Review.empty,
@@ -94,6 +100,7 @@ class SurveyInitial extends SurveyState {
     Local? local,
     BusinessStatus? status,
     Review? review,
+    ThankYouStatus? thankYouStatus,
     int? surveyIndex,
     List<int>? answersId,
     List<int>? questionsId,
@@ -109,6 +116,7 @@ class SurveyInitial extends SurveyState {
         local: local ?? this.local,
         status: status ?? this.status,
         review: review ?? this.review,
+        thankYouStatus: thankYouStatus ?? this.thankYouStatus,
         surveyIndex: surveyIndex ?? this.surveyIndex,
         answersId: answersId ?? this.answersId,
         questionsId: questionsId ?? this.questionsId,
