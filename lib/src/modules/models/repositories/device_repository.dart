@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:survey_point_05/src/constants/enums.dart';
-import 'package:survey_point_05/src/modules/blocs/status_bar_cubit/status_bar_cubit.dart';
+import '/src/modules/blocs/status_bar_cubit/status_bar_cubit.dart';
 
 import '../../../utils/services/local_storage_service.dart';
 import '../../../utils/services/exceptions.dart';
