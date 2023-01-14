@@ -253,6 +253,7 @@ class _ConnectToWiFiDialogState extends State<ConnectToWiFiDialog> {
     passwordNode = FocusNode();
     passwordController = TextEditingController();
     super.initState();
+    stopKioskMode();
     InternetConnectionCheckerPlus().onStatusChange.listen((event) {
       if (event == InternetConnectionStatus.connected) {
         Navigator.pop(context);
@@ -266,6 +267,7 @@ class _ConnectToWiFiDialogState extends State<ConnectToWiFiDialog> {
     ssidNode.dispose();
     passwordController.dispose();
     passwordNode.dispose();
+    startKioskMode();
     super.dispose();
   }
 
@@ -357,7 +359,8 @@ class _ConnectToWiFiDialogState extends State<ConnectToWiFiDialog> {
           TextButton(
             onPressed: () async {
               String ssid = _ssid.isEmpty ? ssidController.text : _ssid;
-              // passwordController.text = 'netcore707';
+              print(ssid);
+              print(passwordController.text);
               await WiFiForIoTPlugin.registerWifiNetwork(
                 ssid,
                 password: passwordController.text,
@@ -367,6 +370,7 @@ class _ConnectToWiFiDialogState extends State<ConnectToWiFiDialog> {
                     : NetworkSecurity.WPA,
               ).then(
                 (value) async {
+                  print(value);
                   if (value) {
                     Navigator.pop(context);
                   }

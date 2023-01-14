@@ -1,6 +1,7 @@
 // const String _apiPathDomain = 'https://survey-point.com/spapi/public/api';
 // const String _apiPathDomain = 'http://172.107.174.161/api';
-const String _apiPathDomain = 'http://192.168.0.103:8080/api';
+// const String _apiPathDomain = 'http://192.168.0.103:8080/api';
+const String _apiPathDomain = 'http://192.168.1.119:8080/api';
 //http://172.107.174.161/index.php
 // TODO: Add API version to all
 const String _apiPathVersion = '/v01';
