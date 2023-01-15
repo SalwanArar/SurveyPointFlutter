@@ -140,11 +140,12 @@ class SurveyCubit extends Cubit<SurveyState> {
   ///
   /// [onNextQuestionNewTest]
   ///
-  onNextQuestionNewTest() async {
-    // Review review = Review.empty;
+  onNextQuestionNew() async {
+    int nextQuestionJump = 1;
+    Review review = Review.empty;
     List<QuestionElement> questions = List.from(state.business.questions);
-    // int surveyLength = questions.length +
-    //     state.business.survey.customerInfo.getCustomerInfoCount;
+    int surveyLength = questions.length +
+        state.business.survey.customerInfo.getCustomerInfoCount;
     int surveyIndex = state.surveyIndex;
     // check if question, customerInfo or both
     if (questions.isNotEmpty && surveyIndex < questions.length) {
@@ -153,31 +154,62 @@ class SurveyCubit extends Cubit<SurveyState> {
       switch (question.questionType) {
         case QuestionType.customRating:
           if (state.answersId.isNotEmpty) {
-            _createNewReview(
+            review = _createNewReview(
               questionId: questions[surveyIndex].answers.first.id,
             );
           }
           break;
         case QuestionType.customSatisfaction:
           if (state.answersId.isNotEmpty) {
-            _createNewReview(
+            review = _createNewReview(
               questionId: questions[surveyIndex].answers.first.id,
             );
           }
           break;
         default:
-          _createNewReview(
+          review = _createNewReview(
             questionId: question.questionId,
           );
       }
+      try {
+        var nextQuestion = questions[surveyIndex + 1].question;
+        List<int> conditionalAnswersId = [];
+        for (var answer in questions[surveyIndex].answers) {
+          if (answer.conditional) {
+            conditionalAnswersId.add(answer.id);
+          }
+        }
+        print(conditionalAnswersId);
+        if (nextQuestion.conditionalId != null) {
+          if (!state.answersId.any(
+            (element) => conditionalAnswersId.contains(element),
+          )) {
+            nextQuestionJump++;
+          }
+        }
+      } catch (_) {
+        print('Out Of Range In Next question');
+      }
     } else if (state.business.survey.customerInfo.getCustomerInfoCount != 0 &&
         surveyIndex < 0) {}
+    if (surveyIndex + nextQuestionJump >= surveyLength) {
+      return onSubmitReview();
+    }
+    return emit(
+      state.copyWith(
+        review: review,
+        surveyIndex: surveyIndex + nextQuestionJump,
+        answersId: [],
+        questionsId: [],
+        dialogVisibility: false,
+      ),
+    );
   }
 
   ///
   /// to create new review
   ///
-  _createNewReview({
+  Review _createNewReview({
     required int questionId,
   }) {
     var reviewedQuestions = state.review.reviewedQuestions;
@@ -187,12 +219,15 @@ class SurveyCubit extends Cubit<SurveyState> {
         answers: state.answersId,
       ),
     );
+    return state.review.copyWith(
+      reviewedQuestions: List.from(reviewedQuestions),
+    );
   }
 
   ///
   /// [onNextQuestionNew]
   ///
-  onNextQuestionNew() async {
+  onNextQuestionNewTest() async {
     Review review = Review.empty;
     List<QuestionElement> questions = List.from(
       state.business.questions,
@@ -525,7 +560,8 @@ class SurveyCubit extends Cubit<SurveyState> {
   /// "FOR NON NORMAL QUESTIONS"
   /// Move to the next question and add a new review to the survey
   ///
-  Future<void> onSubmitReview(// String? comment,
+  Future<void> onSubmitReview(
+      // String? comment,
       // String? contactNumber,
       // String? name,
       ) async {

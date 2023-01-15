@@ -447,11 +447,11 @@ class _ControlSection extends StatelessWidget {
                   ? () {
                       BlocProvider.of<SurveyCubit>(context).onTimerDismiss();
 
-                      if (isLastQuestion) {
-                        BlocProvider.of<SurveyCubit>(context).onSubmitReview();
-                      } else {
+                      // if (isLastQuestion) {
+                      //   BlocProvider.of<SurveyCubit>(context).onSubmitReview();
+                      // } else {
                         BlocProvider.of<SurveyCubit>(context).onNextQuestionNew();
-                      }
+                      // }
                       // TODO: implement audio
                       AudioPlayer().play(AssetSource('audios/click1.mp3'));
                     }

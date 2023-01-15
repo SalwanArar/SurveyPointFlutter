@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:survey_point_05/src/modules/models/device_info.dart';
 import 'package:toast/toast.dart';
 
 import '../../../../../constants/enums.dart';

@@ -59,7 +59,6 @@ class _BusinessViewState extends State<_BusinessView> {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: const BoxDecoration(
         color: Color(0xFC4B4B4B),
